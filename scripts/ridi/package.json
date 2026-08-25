@@ -1,0 +1,14 @@
+{
+  "name": "ridi-episode-comments",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node probe.mjs --check",
+    "probe": "node probe.mjs",
+    "collect": "node collect.mjs",
+    "postinstall": "playwright install chromium"
+  },
+  "dependencies": {
+    "playwright": "^1.56.0"
+  }
+}

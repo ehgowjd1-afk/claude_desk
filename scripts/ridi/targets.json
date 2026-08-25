@@ -1,0 +1,15 @@
+{
+  "_비고": "수집 대상 작품 목록. 여기 적은 작품만 수집합니다.",
+  "targets": [
+    {
+      "title": "엘프의 짝짓기",
+      "bookUrl": null,
+      "episodes": []
+    },
+    {
+      "title": "내게 빌어봐",
+      "bookUrl": null,
+      "episodes": []
+    }
+  ]
+}
