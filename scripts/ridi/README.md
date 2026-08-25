@@ -5,12 +5,21 @@
 돌리는 방식입니다. 로그인은 사장님이 직접 1회만 하고, 세션은 `.ridi-profile/` 에
 저장되어 이후 실행부터 재사용됩니다. (계정 정보를 파일이나 코드에 적을 일은 없습니다)
 
-## 준비
+## 준비 (윈도우 기준)
 
-```bash
-cd scripts/ridi
+1. **Node.js 설치** — https://nodejs.org 에서 LTS 버전. 설치 후 새 터미널에서 `node -v` 가
+   버전을 찍어야 합니다. `'node'은(는) 내부 또는 외부 명령...` 이 나오면 아직 설치 전입니다.
+2. **이 폴더 받기** — 저장소를 clone 하거나, GitHub PR 페이지에서 `Code > Download ZIP`
+   으로 받아 압축을 풉니다.
+3. **PowerShell** 을 열고 이 폴더로 이동한 뒤 설치:
+
+```powershell
+cd C:\경로\scripts\ridi
 npm install          # playwright 설치 + 크롬 자동 설치
 ```
+
+> 경로에 한글이나 공백이 있어도 괜찮습니다. 다만 `C:\Program Files` 같은 곳은 권한 문제가
+> 생길 수 있으니 `문서`나 `바탕화면` 아래를 권합니다.
 
 ## 크롬이 안 뜰 때
 
@@ -33,6 +42,7 @@ playwright: OK
 - `playwright: 못 찾음` → `npm install` 이 안 된 상태입니다.
 - `크롬 실행` 에서 멈춤 → `npx playwright install chromium` 을 실행해주세요.
 - `리디 접속: 실패` → 회사 방화벽/VPN 쪽 문제일 수 있습니다.
+- 아예 `'node'은(는) 내부 또는 외부 명령...` 이 나오면 Node.js 미설치입니다. 위 준비 1번부터.
 
 ## 1단계 — 구조 파악 (probe)
 
@@ -94,7 +104,8 @@ probe 를 돌리면 확인된 `bookUrl` 이 자동으로 기록됩니다.
 
 ## 참고
 
-- `RIDI_HEADLESS=1 node collect.mjs` 로 창 없이 돌릴 수 있습니다. 다만 로그인/성인 인증이
+- 창 없이 돌리려면 PowerShell 에서 `$env:RIDI_HEADLESS=1; node collect.mjs` 입니다.
+  (`RIDI_HEADLESS=1 node ...` 형태는 PowerShell 에서 안 먹습니다) 다만 로그인/성인 인증이
   만료되면 창이 있어야 다시 통과할 수 있으니, 평소에는 그냥 `node collect.mjs` 를 권합니다.
 - CSV 는 BOM 을 붙여 저장하므로 엑셀에서 바로 열어도 한글이 깨지지 않습니다.
 - 회차 댓글은 소장/대여한 회차에서만 열릴 수 있습니다. `비고` 열에 `댓글 API 응답 없음` 이

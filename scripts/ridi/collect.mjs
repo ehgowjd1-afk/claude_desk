@@ -145,7 +145,8 @@ try {
       console.log(`  ${String(i + 1).padStart(3)}화  댓글 ${String(r.count ?? '-').padStart(5)}  ${r.note}`);
 
       // 저장은 매 회차마다 (중간에 끊겨도 결과 보존)
-      fs.writeFileSync(csvPath, '﻿' + rows.map((row) => row.map(csvEscape).join(',')).join('\n'));
+      // 윈도우 엑셀 기준: BOM + CRLF
+      fs.writeFileSync(csvPath, '﻿' + rows.map((row) => row.map(csvEscape).join(',')).join('\r\n'));
       await sleep(cfg.delayMs);
     }
   }
