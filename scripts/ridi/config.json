@@ -1,0 +1,29 @@
+{
+  "_주석": "probe.mjs 를 한 번 돌린 뒤, 그 결과(out/probe-*.json)를 보고 아래 TODO 를 채웁니다.",
+
+  "profileDir": ".ridi-profile",
+  "delayMs": 1500,
+  "outputCsv": "out/ridi_episode_comments.csv",
+
+  "episodeList": {
+    "_설명": "작품 상세 페이지에서 회차 링크를 뽑는 CSS 선택자. probe 결과의 anchors 목록을 보고 확정합니다.",
+    "linkSelector": "a[href*='/books/'], a[href*='/viewer/']",
+    "hrefPattern": "TODO_회차_URL_정규식",
+    "titleSelector": null
+  },
+
+  "commentCount": {
+    "_설명": "mode 는 'api' 또는 'dom'. probe 결과를 보고 하나만 채우면 됩니다.",
+    "mode": "api",
+
+    "api": {
+      "urlPattern": "TODO_댓글_API_URL_정규식",
+      "countPath": "TODO.예: data.comment.total_count"
+    },
+
+    "dom": {
+      "selector": "TODO_댓글수가_표시되는_CSS_선택자",
+      "attribute": null
+    }
+  }
+}
