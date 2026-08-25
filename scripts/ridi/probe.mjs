@@ -7,16 +7,78 @@
 //   npm i playwright && npx playwright install chromium
 //   node probe.mjs
 
-import { chromium } from 'playwright';
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import readline from 'node:readline/promises';
 
-const HERE = path.dirname(new URL(import.meta.url).pathname);
+const HERE = path.dirname(fileURLToPath(import.meta.url)); // 윈도우 경로(C:\...) 대응
 const cfg = JSON.parse(fs.readFileSync(path.join(HERE, 'config.json'), 'utf8'));
 const targets = JSON.parse(fs.readFileSync(path.join(HERE, 'targets.json'), 'utf8')).targets;
 const OUT = path.join(HERE, 'out');
 fs.mkdirSync(OUT, { recursive: true });
+
+// --check : 크롬이 안 뜰 때 원인을 찾는 진단 모드
+const CHECK = process.argv.includes('--check');
+
+async function loadChromium() {
+  try {
+    const pw = await import('playwright');
+    return pw.chromium;
+  } catch {
+    console.error(`
+[X] playwright 모듈을 못 찾았습니다.
+    이 폴더(${HERE})에서 아래를 실행해주세요.
+
+      npm i playwright
+      npx playwright install chromium
+`);
+    process.exit(1);
+  }
+}
+
+async function launch(chromium, headless) {
+  try {
+    return await chromium.launchPersistentContext(path.join(HERE, cfg.profileDir), {
+      headless,
+      viewport: null,
+      locale: 'ko-KR',
+      args: ['--start-maximized'],
+    });
+  } catch (e) {
+    console.error(`\n[X] 크롬을 띄우지 못했습니다.\n    ${e.message.split('\n')[0]}\n`);
+    if (/Executable doesn't exist|browserType.launch/.test(e.message)) {
+      console.error('    → 크롬이 아직 설치 안 된 상태입니다. 아래를 실행해주세요.\n');
+      console.error('      npx playwright install chromium\n');
+    }
+    process.exit(1);
+  }
+}
+
+if (CHECK) {
+  console.log('--- 진단 ---');
+  console.log('실행 폴더 :', HERE);
+  console.log('Node      :', process.version, '/', process.platform);
+  console.log('config    :', fs.existsSync(path.join(HERE, 'config.json')) ? 'OK' : '없음');
+  console.log('targets   :', fs.existsSync(path.join(HERE, 'targets.json')) ? `OK (작품 ${targets.length}건)` : '없음');
+  const chromium = await loadChromium();
+  console.log('playwright: OK');
+  const ctx = await launch(chromium, true);
+  const pg = await ctx.newPage();
+  await pg.goto('about:blank');
+  console.log('크롬 실행 : OK');
+  let net = 'OK';
+  try {
+    const r = await pg.goto('https://ridibooks.com/', { waitUntil: 'domcontentloaded', timeout: 30000 });
+    net = `HTTP ${r?.status()}`;
+  } catch (e) {
+    net = '실패 - ' + e.message.split('\n')[0].slice(0, 80);
+  }
+  console.log('리디 접속 :', net);
+  await ctx.close();
+  console.log('\n전부 OK 로 나오면 그냥 `node probe.mjs` 로 실행하시면 크롬 창이 뜹니다.');
+  process.exit(0);
+}
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 const wait = (msg) => rl.question(`\n>>> ${msg}\n    (준비되면 Enter) `);
@@ -80,12 +142,9 @@ async function anchors(page) {
   );
 }
 
-const ctx = await chromium.launchPersistentContext(path.join(HERE, cfg.profileDir), {
-  headless: false,
-  viewport: null,
-  locale: 'ko-KR',
-  args: ['--start-maximized'],
-});
+const chromium = await loadChromium();
+console.log('\n크롬 창을 띄웁니다... (창이 안 뜨면 Ctrl+C 후 `node probe.mjs --check` 를 실행해주세요)');
+const ctx = await launch(chromium, false);
 const page = ctx.pages()[0] ?? (await ctx.newPage());
 attach(page);
 ctx.on('page', attach); // 새 탭/팝업도 기록

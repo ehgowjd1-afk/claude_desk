@@ -9,10 +9,30 @@
 
 ```bash
 cd scripts/ridi
-npm init -y
-npm i playwright
-npx playwright install chromium
+npm install          # playwright 설치 + 크롬 자동 설치
 ```
+
+## 크롬이 안 뜰 때
+
+```bash
+node probe.mjs --check
+```
+
+어디서 막혔는지 한 줄씩 찍어줍니다.
+
+```
+실행 폴더 : ...
+Node      : v22.x / win32
+config    : OK
+targets   : OK (작품 2건)
+playwright: OK
+크롬 실행 : OK
+리디 접속 : HTTP 200
+```
+
+- `playwright: 못 찾음` → `npm install` 이 안 된 상태입니다.
+- `크롬 실행` 에서 멈춤 → `npx playwright install chromium` 을 실행해주세요.
+- `리디 접속: 실패` → 회사 방화벽/VPN 쪽 문제일 수 있습니다.
 
 ## 1단계 — 구조 파악 (probe)
 

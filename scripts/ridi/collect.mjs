@@ -8,8 +8,9 @@
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const HERE = path.dirname(new URL(import.meta.url).pathname);
+const HERE = path.dirname(fileURLToPath(import.meta.url)); // 윈도우 경로(C:\...) 대응
 const cfg = JSON.parse(fs.readFileSync(path.join(HERE, 'config.json'), 'utf8'));
 const targets = JSON.parse(fs.readFileSync(path.join(HERE, 'targets.json'), 'utf8')).targets;
 
